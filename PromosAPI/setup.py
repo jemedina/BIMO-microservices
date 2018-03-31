@@ -1,5 +1,4 @@
 import sys
-import app.app as app
 
 CURRENT_PYTHON = sys.version_info[:2]
 REQUIRED_PYTHON = (3, 5)
@@ -12,6 +11,7 @@ Unsupported Python version You need at least python 3.5
     sys.exit(1)
 def install_dependencies():
     import pip
+    pip.main(['install', 'setuptools'])
     pip.main(['install', 'flask'])
     pip.main(['install', 'flask-mysql'])
     print("Done. Please before runing the PromosAPI, first follow the next steps:")
@@ -27,4 +27,5 @@ if __name__ == '__main__':
         if sys.argv[1] == 'install':
             install_dependencies()
         elif sys.argv[1] == 'run':
+            import app.app as app
             app.start()
