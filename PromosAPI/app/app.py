@@ -14,6 +14,7 @@ def executeQuery(sql):
         cursor = conn.cursor()
         cursor.execute(sql)
         result = cursor.fetchall()
+        conn.commit()
     except Exception as e:
         print("SQL Error. Failed executing next query: "+str(e))
         return None
@@ -70,6 +71,14 @@ def promo_by_titular(no_tarjeta):
         promos.append(promoBuilt)
     return jsonify(promos)
 
+@flaskapp.route('/promos/add/titular/<num_promo>/<no_tarjeta>')
+def promo_add_titular(num_promo, no_tarjeta):
+    sql_query = '''INSERT INTO promocion_titular VALUES({}, {})'''.format(num_promo,no_tarjeta)
+    result = executeQuery(sql_query)
+    if result != None:
+        return "Ok"
+    else:
+        return "Error"
 
 def start():
     config = GlobalConfiguration()
@@ -80,5 +89,5 @@ def start():
     mysql.init_app(flaskapp)
 
     print("Initializing application!")
-    flaskapp.run()
+    flaskapp.run(host='0.0.0.0',port=5001)
         
