@@ -80,6 +80,22 @@ def promo_add_titular(num_promo, no_tarjeta):
     else:
         return "Error"
 
+@flaskapp.route('/promos/codeslist/<num_promo>')
+def codes_list(num_promo):
+    codesResult = executeQuery('''SELECT * FROM lista_de_codigos_validos WHERE estado = 0 and num_promo = {}'''.format(num_promo))
+    print(codesResult)
+    codes = []
+    for code in codesResult:
+        codes.append(buildCodeReponse(code))
+    return jsonify(codes)
+
+def buildCodeReponse(code):
+    return {
+        'codigo': code[0],
+        'estado': code[1],
+        'num_promo': code[2]
+    }
+
 def start():
     config = GlobalConfiguration()
     flaskapp.config['MYSQL_DATABASE_USER'] = config.DATABASE_USER
