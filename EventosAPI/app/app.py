@@ -33,7 +33,7 @@ def start():
     mysql.init_app(flaskapp)
 
     print("Initializing application!")
-    flaskapp.run()
+    flaskapp.run(host='0.0.0.0',port=5000)
 
 @flaskapp.route('/funciones/precio/<num_asiento>/<seccion>/<folio>/<fecha>/<hora>')
 def price_by_num_asiento(num_asiento,seccion, folio, fecha, hora):
@@ -92,20 +92,40 @@ def events_data(folio):
     funciones.append(buildEventsReponse(funcionesResult))
     return jsonify(funciones)
 
+@flaskapp.route('/funciones/all')
+def all_events():
+    funcionesResult = executeQuery('''SELECT * FROM evento inner join precios_evento on evento.folio = precios_evento.folio_evento''')
+    funciones = []
+    for funcion in funcionesResult:
+        funciones.append(buildEventsReponse(funcion))
+    funcionesHorarios = executeQuery('''SELECT * FROM funcion''')
+    for horario in funcionesHorarios:
+        appendHorariosToFunciones(funciones, horario)
+    print(funciones)
+    return jsonify(funciones)
+
+def appendHorariosToFunciones(funciones, horario):
+    for i in range(0, len(funciones)):
+        if funciones[i]['folio'] == horario[1]:
+            if not 'funciones' in funciones[i]:
+                funciones[i]['funciones'] = []
+            funciones[i]['funciones'].append({
+				'id': horario[0],
+                'fecha':str(horario[2]),
+                'hora':str(horario[3])
+                })
+			
 def buildEventsReponse(events):
     return {
         'folio': events[0],
         'nombre': events[1],
         'artistas': events[2],
-        'descripcion': events[3]
+        'descripcion': events[3],
+        'imgurl': events[4],
+        'precios': {
+            'top': events[6],
+            'mid': events[7],
+            'low': events[8],					
+		}
     }
 
-
-
-
-
-
-
-
-
-        
