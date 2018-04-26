@@ -86,10 +86,14 @@ def all_seats_by_section(seccion, folio, fecha, hora):
 
 @flaskapp.route('/funciones/datos_eventos/<folio>')
 def events_data(folio):
-    funcionesResult = executeQuery('''SELECT * FROM evento WHERE folio = {}'''.format(folio))
-    print(funcionesResult)
+    funcionesResult = executeQuery('''SELECT * FROM evento inner join precios_evento on evento.folio = precios_evento.folio_evento AND folio = {}'''.format(folio))
     funciones = []
-    funciones.append(buildEventsReponse(funcionesResult))
+    for funcion in funcionesResult:
+        funciones.append(buildEventsReponse(funcion))
+    funcionesHorarios = executeQuery('''SELECT * FROM funcion AND folio = {}'''.format(folio))
+    for horario in funcionesHorarios:
+        appendHorariosToFunciones(funciones, horario)
+    print(funciones)
     return jsonify(funciones)
 
 @flaskapp.route('/funciones/all')
