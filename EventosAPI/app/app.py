@@ -75,8 +75,9 @@ def seats_by_titular(no_tarjeta):
 
 @flaskapp.route('/funciones/all-seats/<id_funcion>/<seccion>')
 def all_seats_by_section(id_funcion, seccion):
-    funcionesResult = executeQuery('''SELECT * FROM asiento WHERE id_funcion = {}'''.format(id_funcion)+''' and seccion = '{}' '''.format(seccion))
-    print(funcionesResult)
+    sql_code = '''SELECT * FROM asiento WHERE id_funcion = {}'''.format(id_funcion)+''' and seccion = '{}' '''.format(seccion)
+    funcionesResult = executeQuery(sql_code)
+    print(sql_code)
     funciones = []
     for func in funcionesResult:
         funciones.append(buildSeatsReponse(func))
