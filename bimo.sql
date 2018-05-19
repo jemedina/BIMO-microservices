@@ -39,7 +39,7 @@ CREATE TABLE `asiento` (
 
 LOCK TABLES `asiento` WRITE;
 /*!40000 ALTER TABLE `asiento` DISABLE KEYS */;
-INSERT INTO `asiento` VALUES (1,'1_1','1234','A1',NULL,NULL,NULL),(1,'1_3','1234','A1',NULL,NULL,NULL),(1,'1_6,1_7','1234','A1',NULL,NULL,NULL),(1,'7_7','1234','A1',NULL,NULL,NULL),(1,'5_6,5_5,5_4','999999999999','A2',NULL,NULL,NULL),(1,'4_3,4_4,4_5,4_6','1234124312431243','A2',NULL,NULL,NULL),(1,'1_1,1_2,1_3','1234','B1',NULL,NULL,NULL),(1,'1_8,1_9,1_10','1234','B2',NULL,NULL,NULL),(1,'1_1,2_1,2_2,1_2','1234','A1',NULL,NULL,NULL),(3,'1_1,1_2,2_2,2_3','1234','B2',NULL,NULL,NULL),(3,'1_10,2_10','1234','B2',NULL,NULL,NULL),(3,'5_10','1234','B2',NULL,NULL,NULL),(3,'5_10','1234','B2',NULL,NULL,NULL),(0,'1_9,1_7','1234','A3',NULL,NULL,NULL),(0,'10_3,10_4,10_5,10_6,10_7','1','A3',NULL,NULL,NULL),(0,'4_1,4_2,4_3','1234','A3',NULL,NULL,NULL),(1,'1_1,1_2','1234234554236666','A1',NULL,NULL,NULL),(0,'1_8,1_9,1_10','1111111111111111','A1','2018-05-18','15:00:00',5000),(0,'1_10,2_10','1111111111111111','A2','2018-05-18','15:00:00',3000),(0,'2_8','1111111111111111','A1','2018-05-18','18:20:36',800);
+INSERT INTO `asiento` VALUES (1,'1_1','1234','A1',NULL,NULL,NULL),(1,'1_3','1234','A1',NULL,NULL,NULL),(1,'1_6,1_7','1234','A1',NULL,NULL,NULL),(1,'7_7','1234','A1',NULL,NULL,NULL),(1,'5_6,5_5,5_4','999999999999','A2',NULL,NULL,NULL),(1,'4_3,4_4,4_5,4_6','1234124312431243','A2',NULL,NULL,NULL),(1,'1_1,1_2,1_3','1234','B1',NULL,NULL,NULL),(1,'1_8,1_9,1_10','1234','B2',NULL,NULL,NULL),(1,'1_1,2_1,2_2,1_2','1234','A1',NULL,NULL,NULL),(3,'1_1,1_2,2_2,2_3','1234','B2',NULL,NULL,NULL),(3,'1_10,2_10','1234','B2',NULL,NULL,NULL),(3,'5_10','1234','B2',NULL,NULL,NULL),(3,'5_10','1234','B2',NULL,NULL,NULL),(0,'1_9,1_7','1234','A3',NULL,NULL,NULL),(0,'10_3,10_4,10_5,10_6,10_7','1','A3',NULL,NULL,NULL),(0,'4_1,4_2,4_3','1234','A3',NULL,NULL,NULL),(1,'1_1,1_2','1234234554236666','A1',NULL,NULL,NULL),(0,'1_8,1_9,1_10','1111111111111111','A1','2018-05-18','15:00:00',5000),(0,'1_10,2_10','1111111111111111','A2','2018-05-18','15:00:00',3000),(0,'2_8','1111111111111111','A1','2018-05-18','18:20:36',800),(0,'1_1','1111111122222222','A1','2018-05-18','22:03:59',800);
 /*!40000 ALTER TABLE `asiento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,17 +51,10 @@ DROP TABLE IF EXISTS `estacionamiento`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `estacionamiento` (
-  `num_cajon` int(11) NOT NULL,
-  `folio` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha` date NOT NULL,
-  `hora` time NOT NULL,
-  `no_tarjeta` varchar(16) NOT NULL,
-  PRIMARY KEY (`num_cajon`,`folio`,`fecha`,`hora`),
-  KEY `folio` (`folio`,`fecha`,`hora`),
-  KEY `no_tarjeta` (`no_tarjeta`),
-  CONSTRAINT `estacionamiento_ibfk_1` FOREIGN KEY (`folio`, `fecha`, `hora`) REFERENCES `funcion` (`folio`, `fecha`, `hora`),
-  CONSTRAINT `estacionamiento_ibfk_2` FOREIGN KEY (`no_tarjeta`) REFERENCES `titular` (`no_tarjeta`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  `no_tarjeta` varchar(17) DEFAULT NULL,
+  `id_funcion` int(11) DEFAULT NULL,
+  `num_cajon` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -70,7 +63,7 @@ CREATE TABLE `estacionamiento` (
 
 LOCK TABLES `estacionamiento` WRITE;
 /*!40000 ALTER TABLE `estacionamiento` DISABLE KEYS */;
-INSERT INTO `estacionamiento` VALUES (1,1,'2018-03-30','20:00:00','1234');
+INSERT INTO `estacionamiento` VALUES ('1111',0,2);
 /*!40000 ALTER TABLE `estacionamiento` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,4 +262,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-18 21:44:46
+-- Dump completed on 2018-05-19  9:31:38
