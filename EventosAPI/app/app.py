@@ -76,6 +76,14 @@ def seats_by_titular(no_tarjeta):
     for func in funcionesResult:
         funciones.append(buildSeatsReponse(func))
     return jsonify(funciones)
+@flaskapp.route('/funciones/funciones-asociadas/<no_tarjeta>')
+def funciones_asociadas(no_tarjeta):
+    funcionesResult = executeQuery('''select evento.nombre, evento.folio, funcion.fecha, funcion.hora, asiento.no_tarjeta, funcion.id from evento, funcion, asiento where evento.folio=funcion.folio and asiento.id_funcion=funcion.id and asiento.no_tarjeta={} group by funcion.id'''.format(no_tarjeta))
+    print("----->",format(no_tarjeta))
+    funciones = []
+    for func in funcionesResult:
+        funciones.append(buildFuncionesAsociadasResponse(func))
+    return jsonify(funciones)
 
 @flaskapp.route('/funciones/eventos-por-id/<id_funcion>')
 def eventos_por_id(id_funcion):
@@ -226,5 +234,16 @@ def buildFEReponse(events):
         'hora': str(events[3]),
         'nombre': events[5],
         'artistas': events[6]
+    }
+
+
+def buildFuncionesAsociadasResponse(events):
+    return {
+        'nombre': str(events[0]),
+        'folio': events[1],
+        'fecha': str(events[2]),
+        'hora': str(events[3]),
+        'no_tarjeta': str(events[4]),
+        'id_funcion': events[5]
     }
 
