@@ -59,18 +59,31 @@ def reserved_seats_by_section(seccion, folio, fecha, hora):
 
 def buildSeatsReponse(seat):
     return {
+        'id_funcion': seat[0],
         'asientos': seat[1],
         'titular': seat[2],
-        'seccion': seat[3]
+        'seccion': seat[3],
+        'fecha': str(seat[4]),
+        'hora': str(seat[5]), 
+        'total': seat[6]
     }
 
 @flaskapp.route('/funciones/asientos-reservados-por-titular/<no_tarjeta>')
 def seats_by_titular(no_tarjeta):
-    funcionesResult = executeQuery('''SELECT * FROM asiento_titular WHERE fecha >= curdate() and no_tarjeta = {}'''.format(no_tarjeta))
-    print(funcionesResult)
+    funcionesResult = executeQuery('''SELECT * FROM asiento WHERE no_tarjeta = {}'''.format(no_tarjeta))
+    print("----->",format(no_tarjeta))
     funciones = []
     for func in funcionesResult:
         funciones.append(buildSeatsReponse(func))
+    return jsonify(funciones)
+
+@flaskapp.route('/funciones/eventos-por-id/<id_funcion>')
+def eventos_por_id(id_funcion):
+    funcionesResult = executeQuery('''SELECT * FROM funcion, evento WHERE evento.folio=funcion.folio and funcion.id = {}'''.format(id_funcion))
+    print("----->",format(id_funcion))
+    funciones = []
+    for func in funcionesResult:
+        funciones.append(buildFEReponse(func))
     return jsonify(funciones)
 
 @flaskapp.route('/funciones/all-seats/<id_funcion>/<seccion>')
@@ -104,18 +117,20 @@ def preciosAsientos(folio):
     return jsonify(precios)
 
 
-@flaskapp.route('/funciones/save/<funcion_id>/<folio_artista>/<seccion>/<asientos>/<cardNumber>/<cardCvc>')
-def guardarReservacion(funcion_id,folio_artista,seccion,asientos,cardNumber,cardCvc):
+@flaskapp.route('/funciones/save/<funcion_id>/<folio_artista>/<seccion>/<asientos>/<cardNumber>/<cardCvc>/<fecha_mov>/<hora_mov>/<total>')
+def guardarReservacion(funcion_id,folio_artista,seccion,asientos,cardNumber,cardCvc,fecha_mov, hora_mov, total):
     conn = mysql.connect()
     cursor = conn.cursor()
     try:
-        query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}")'''.format(funcion_id,asientos,cardNumber,seccion)
+        query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}","{}","{}",{})'''.format(funcion_id,asientos,cardNumber,seccion,fecha_mov, hora_mov,total)
+        print('Query:',query)
         res = cursor.execute(query)
         conn.commit()
         print('Query:',query)
         return jsonify(True)
     except Exception as e:
         print("Error during insert:",str(e))
+        print("QUERY------------------------------------------------>",query)
         return jsonify(False)
 
 
@@ -129,6 +144,27 @@ def all_events():
     funcionesHorarios = executeQuery('''SELECT * FROM funcion''')
     for horario in funcionesHorarios:
         appendHorariosToFunciones(funciones, horario)
+    print(funciones)
+    return jsonify(funciones)
+
+flaskapp.route('/funciones/get_folio/<id_funcion>')
+def get_folio(id_funcion):
+    sql_code = '''SELECT * FROM funcion WHERE id_funcion = {}'''.format(id_funcion)
+    funcionesResult = executeQuery(sql_code)
+    print(sql_code)
+    funciones = []
+    for func in funcionesResult:
+        funciones.append(buildFuncionReponse(func))
+    return jsonify(funciones) 
+
+flaskapp.route('/funciones/get-datos/<no_tarjeta>')
+def get_datos(no_tarjeta):
+    print("xD",no_tarjeta)
+    funcionesResult = executeQuery('''SELECT * FROM asiento, evento, funcion, precios_evento WHERE asiento.id_funcion=funcion.id and funcion.folio=evento.folio and evento.folio=precios_evento.folio_evento and asiento.no_tarjeta={}'''.format(no_tarjeta));
+    print("#########################################",funcionesResult)
+    funciones = []
+    for funcion in funcionesResult:
+        funciones.append(buildMetasReponse(funcion))
     print(funciones)
     return jsonify(funciones)
 
@@ -153,14 +189,42 @@ def buildEventsReponse(events):
         'precios': {
             'top': events[6],
             'mid': events[7],
-            'low': events[8],					
+            'low': events[8]				
 		}
-    }
+    } 
+
+def buildMetasReponse(events):
+    return {
+        'id_funcion': events[0],
+        'asientos': events[1],
+        'seccion': events[3],
+        'folio': events[4],
+        'nombre': events[5],
+        'artistas': events[6],
+        'fecha': str(events[11]),
+        'hora': str(events[12]),
+        'precios': {
+            'top': events[14],
+            'mid': events[15],
+            'low': events[16]					
+		}
+    } 
+
 def buildPreciosResponse(precios):
     return {
         'folio_evento': precios[0],
         'top': precios[1],
         'mid': precios[2],
         'low': precios[3]
+    }
+
+def buildFEReponse(events):
+    return {
+        'id': events[0],
+        'folio': events[1],
+        'fecha': str(events[2]),
+        'hora': str(events[3]),
+        'nombre': events[5],
+        'artistas': events[6]
     }
 
