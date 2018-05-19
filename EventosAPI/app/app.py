@@ -130,12 +130,23 @@ def guardarReservacion(funcion_id,folio_artista,seccion,asientos,cardNumber,card
     conn = mysql.connect()
     cursor = conn.cursor()
     try:
-        query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}","{}","{}",{})'''.format(funcion_id,asientos,cardNumber,seccion,fecha_mov, hora_mov,total)
-        print('Query:',query)
-        res = cursor.execute(query)
-        conn.commit()
-        print('Query:',query)
-        return jsonify(True)
+        query = '''select asientos from asiento where id_funcion={} and no_tarjeta={}'''.format(funion_id,cardNumber)
+        resp = cursor.execute(query)
+        asientosN = ""
+        for asiento in resp:
+            asientosN+=","+asiento
+        asientosN+=","+asientos
+        asientosN=asientos.split(",")
+        asientos=len(asientos)
+        if asientos <=5:
+            query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}","{}","{}",{})'''.format(funcion_id,asientos,cardNumber,seccion,fecha_mov, hora_mov,total)
+            print('Query:',query)
+            res = cursor.execute(query)
+            conn.commit()
+            print('Query:',query)
+            return jsonify(True)
+        else
+            return jsonify(False)
     except Exception as e:
         print("Error during insert:",str(e))
         print("QUERY------------------------------------------------>",query)
