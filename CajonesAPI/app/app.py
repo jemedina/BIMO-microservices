@@ -26,16 +26,14 @@ def executeQuery(sql):
 
 def buildCajonReponse(caj):
     return {
-        'num_cajon': caj[0],
-        'folio': caj[1],
-        'fecha': int(time.mktime(caj[2].timetuple()))*1000,
-        'hora': str(caj[3]),
-        'no_tarjeta': caj[4]
+        'no_tarjeta': caj[0],
+        'id_funcion': caj[1],
+        'num_cajon': caj[2]
     }
 
-@flaskapp.route('/cajones/cajones-ocupados/<folio>/<fecha>/<hora>')
-def cajones_ocupados(folio, fecha, hora):
-    sql_sent = '''SELECT * FROM estacionamiento WHERE folio = {}'''.format(folio)+''' and fecha = "{}"'''.format(fecha)+''' and hora = "{}"'''.format(hora)
+@flaskapp.route('/cajones/cajones-ocupados/<id_funcion>')
+def cajones_ocupados(id_funcion):
+    sql_sent = '''SELECT * FROM estacionamiento WHERE id_funcion = {}'''.format(id_funcion)
     cajonesResult = executeQuery(sql_sent)
     print(sql_sent)
     cajones = []
@@ -54,9 +52,9 @@ def cajones_por_titular(titular):
     print("JSON: ",cajones)
     return jsonify(cajones)
     
-@flaskapp.route('/cajones/add/<num_cajon>/<folio>/<fecha>/<hora>/<no_tarjeta>')
-def promo_add_titular(num_cajon, folio, fecha, hora, no_tarjeta):
-    query_str = '''INSERT INTO estacionamiento VALUES({}, {}, "{}", "{}", "{}")'''.format(num_cajon,folio,fecha,hora,no_tarjeta)
+@flaskapp.route('/cajones/add/<id_funcion>/<no_tarjeta>/<num_cajon>')
+def promo_add_titular(id_funcion, no_tarjeta, num_cajon):
+    query_str = '''INSERT INTO estacionamiento VALUES({}, {}, {})'''.format(no_tarjeta, id_funcion, num_cajon)
     sql_query = query_str
     print("SQL",query_str)
     result = executeQuery(sql_query)
