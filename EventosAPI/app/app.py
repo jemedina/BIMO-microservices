@@ -130,28 +130,74 @@ def guardarReservacion(funcion_id,folio_artista,seccion,asientos,cardNumber,card
     conn = mysql.connect()
     cursor = conn.cursor()
     try:
-        query = '''select asientos from asiento where id_funcion={} and no_tarjeta={}'''.format(funion_id,cardNumber)
-        resp = cursor.execute(query)
+        query = '''select asientos from asiento where id_funcion={} and no_tarjeta={}'''.format(funcion_id,cardNumber)
+        cursor.execute(query)
+        resp = cursor.fetchall()
         asientosN = ""
         for asiento in resp:
-            asientosN+=","+asiento
-        asientosN+=","+asientos
-        asientosN=asientos.split(",")
-        asientos=len(asientos)
-        if asientos <=5:
+            if(asientosN != ""):
+                asientosN+=","+asiento[0]
+            else:
+                asientosN=asiento[0]
+
+        if(asientosN != ""):
+            asientosN+=","+asientos
+        else:
+            asientosN=asientos
+        asientosSplited=asientosN.split(",")
+        asientosCount=len(asientosSplited)
+        if asientosCount <=5:
             query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}","{}","{}",{})'''.format(funcion_id,asientos,cardNumber,seccion,fecha_mov, hora_mov,total)
             print('Query:',query)
             res = cursor.execute(query)
             conn.commit()
             print('Query:',query)
             return jsonify(True)
-        else
+        else:
+            print("DEBUG asientos:",asientosCount)
+            print("DEBUG query:",query)
+            print("DEBUG str:",asientosN)
             return jsonify(False)
     except Exception as e:
         print("Error during insert:",str(e))
-        print("QUERY------------------------------------------------>",query)
         return jsonify(False)
 
+@flaskapp.route('/funciones/save_wpromo/<funcion_id>/<folio_artista>/<seccion>/<asientos>/<cardNumber>/<cardCvc>/<fecha_mov>/<hora_mov>/<total>/<num_promo>')
+def guardarReservacionConPromo(funcion_id,folio_artista,seccion,asientos,cardNumber,cardCvc,fecha_mov, hora_mov, total,num_promo):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    try:
+        query = '''select asientos from asiento where id_funcion={} and no_tarjeta={}'''.format(funcion_id,cardNumber)
+        cursor.execute(query)
+        resp = cursor.fetchall()
+        asientosN = ""
+        for asiento in resp:
+            if(asientosN != ""):
+                asientosN+=","+asiento[0]
+            else:
+                asientosN=asiento[0]
+
+        if(asientosN != ""):
+            asientosN+=","+asientos
+        else:
+            asientosN=asientos
+        asientosSplited=asientosN.split(",")
+        asientosCount=len(asientosSplited)
+        if asientosCount <=5:
+            query = '''INSERT INTO asiento VALUES ({},"{}","{}","{}","{}","{}",{})'''.format(funcion_id,asientos,cardNumber,seccion,fecha_mov, hora_mov,total)
+            print('Query:',query)
+            res = cursor.execute(query)
+            conn.commit()
+            print('Query:',query)
+            return jsonify(True)
+        else:
+            print("DEBUG asientos:",asientosCount)
+            print("DEBUG query:",query)
+            print("DEBUG str:",asientosN)
+            return jsonify(False)
+    except Exception as e:
+        print("Error during insert:",str(e))
+        return jsonify(False)
 
 
 @flaskapp.route('/funciones/all')

@@ -30,7 +30,8 @@ def buildPromoReponse(promo):
         'folio': promo[1],
         'descripcion': promo[2],
         'fecha_inicio': int(time.mktime(promo[3].timetuple()))*1000,
-        'fecha_fin': int(time.mktime(promo[4].timetuple()))*1000
+        'fecha_fin': int(time.mktime(promo[4].timetuple()))*1000,
+        'descuento': float(promo[5])
     }
 
 @flaskapp.route('/promos/all')
